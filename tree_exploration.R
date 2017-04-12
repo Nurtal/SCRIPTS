@@ -2,13 +2,19 @@ library(FactoMineR)
 library(factoextra)
 library(corrplot)
 
+# tree importation
+library(rpart)
+library(rpart.plot)
+
 #-----------------#
 # DATA PROCESSING #
 #-----------------#
 
 #load data
 #data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
-data <- read.csv("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+#data <- read.csv("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+data <- read.csv("C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+
 
 # drop medication (lots of NA)
 medication_col_names = grep("Medication", names(data), value=TRUE)
@@ -85,5 +91,39 @@ diagnosis_data$X.Clinical.Sampling.CENTER = as.factor(data$X.Clinical.Sampling.C
 sub_data_list = list(lung_data, kidney_data, nerveSystem_data, skin_data, muscleAndSkeletal_data, comorbidity_data, vascular_data, gastro_data, heart_data, diagnosis_data)
 sub_data_name = list("lung", "kidney", "nerveSystem", "skin", "muscleAndSkeletal", "comorbidity", "vascular", "gastro", "heart", "diagnosis")
 
+#-------------------#
+# Tree Construction #
+#-------------------#
 
 
+# Step1: Begin with a small cp. 
+tree <- rpart(X.Clinical.Diagnosis.DISEASE ~ ., data = data, control = rpart.control(cp = 0.0001))
+
+# Step2: Pick the tree size that minimizes misclassification rate (i.e. prediction error).
+# Prediction error rate in training data = Root node error * rel error * 100%
+# Prediction error rate in cross-validation = Root node error * xerror * 100%
+# Hence we want the cp value (with a simpler tree) that minimizes the xerror. 
+printcp(tree)
+bestcp <- tree$cptable[which.min(tree$cptable[,"xerror"]),"CP"]
+
+# Step3: Prune the tree using the best cp.
+tree.pruned <- prune(tree, cp = bestcp)
+
+#--------------------#
+# Tree Visualisation #
+#--------------------#
+
+# visu 1
+plot(tree.pruned)
+text(tree.pruned, cex = 0.8, use.n = TRUE, xpd = TRUE)
+
+# visu 2
+prp(tree.pruned, faclen = 0, cex = 0.8, extra = 1)
+
+# visu 3
+tot_count <- function(x, labs, digits, varlen)
+{
+  paste(labs, "\n\nn =", x$frame$n)
+}
+
+prp(tree.pruned, faclen = 0, cex = 0.8, node.fun=tot_count)
