@@ -7,7 +7,8 @@ library(corrplot)
 #-----------------#
 
 #load data
-data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+#data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+data <- read.csv("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
 
 # drop medication (lots of NA)
 medication_col_names = grep("Medication", names(data), value=TRUE)
@@ -82,12 +83,14 @@ diagnosis_data$X.Clinical.Demography.SEX = as.factor(data$X.Clinical.Demography.
 diagnosis_data$X.Clinical.Sampling.CENTER = as.factor(data$X.Clinical.Sampling.CENTER)
 
 sub_data_list = list(lung_data, kidney_data, nerveSystem_data, skin_data, muscleAndSkeletal_data, comorbidity_data, vascular_data, gastro_data, heart_data, diagnosis_data)
+sub_data_name = list("lung", "kidney", "nerveSystem", "skin", "muscleAndSkeletal", "comorbidity", "vascular", "gastro", "heart", "diagnosis")
 
 
 for(val in 1:length(sub_data_list)){
   
   # Get data
   data = sub_data_list[[val]]
+  
   
   # Perfrom ACM
   mca1 = MCA(data, graph = FALSE)
@@ -105,60 +108,39 @@ for(val in 1:length(sub_data_list)){
   # PLot Section #
   #--------------#
   
+  # Plot explain variance
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "explain_variance_", sub_data_name[val], ".png", sep="")
+  png(filename=image_file_name)
+  plot(fviz_screeplot(mca1))
+  dev.off()
+  
+  # Plot most contributing variables for each dimension
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "variable_contribution_", sub_data_name[val], ".png", sep="")
+  png(filename=image_file_name)
+  var <- get_mca_var(mca1)
+  corrplot(var$contrib, is.corr = FALSE)
+  dev.off()
+  
   # Plot individual, colored by sickness, add ellipse
-  fviz_mca_ind(mca1, label="none", habillage = sick,
-               addEllipses = TRUE, ellipse.level = 0.95)
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_disease_", sub_data_name[val], ".png", sep="")
+  png(filename=image_file_name)
+  plot(fviz_mca_ind(mca1, label="none", habillage = sick,
+               addEllipses = TRUE, ellipse.level = 0.95))
+  dev.off()
+  
+  # Plot individual, colored by sex, add ellipse
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_sex_", sub_data_name[val], ".png", sep="")
+  png(filename=image_file_name)
+  plot(fviz_mca_ind(mca1, label="none", habillage = sex,
+               addEllipses = TRUE, ellipse.level = 0.95))
+  dev.off()
+  
+  # Plot individual, colored by center, add ellipse
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_center_", sub_data_name[val], ".png", sep="")
+  png(filename=image_file_name)
+  plot(fviz_mca_ind(mca1, label="none", habillage = center,
+               addEllipses = TRUE, ellipse.level = 0.95))
+  dev.off()
   
   
 }
-
-
-
-
-
-
-
-#------------#
-# TEST SPACE #
-#------------#
-
-
-#-----#
-# ACM #
-#-----#
-
-mca1 = MCA(heart_data, graph = TRUE)
-fviz_screeplot(mca1)
-
-plot(mca1)
-fviz_mca_biplot(mca1)
-
-# Correlation between variables and principal dimensions
-plot(mca1, choix = "var")
-
-
-var <- get_mca_var(mca1)
-corrplot(var$contrib, is.corr = FALSE)
-
-
-# work on individual
-ind <- get_mca_ind(mca1)
-fviz_mca_ind(mca1)
-
-# contribution of individual to dimensions
-fviz_contrib(mca1, choice = "ind", axes = 1:2, top = 20)
-
-# Control the transparency of individuals using their contribution
-# Possible values for the argument alpha.ind are :
-# "cos2", "contrib", "coord", "x", "y"
-fviz_mca_ind(mca1, alpha.ind="contrib")
-
-# represent individual, colored by diagnostic
-sick <- as.factor(data$X.Clinical.Diagnosis.DISEASE)
-sex <- as.factor(data$X.Clinical.Demography.SEX)
-center <- as.factor(data$X.Clinical.Sampling.CENTER)
-fviz_mca_ind(mca1, label = "none", habillage=sick)
-
-# add ellipse
-fviz_mca_ind(mca1, label="none", habillage = sick,
-addEllipses = TRUE, ellipse.level = 0.95)
