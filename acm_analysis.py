@@ -34,7 +34,7 @@ for line in data:
 		for element in line_in_array:
 			header_in_string += str(element)+","
 			element_in_array = element.split("\\")
-			if("Clinical" in element_in_array):
+			if("Clinical" in element_in_array or "Autoantibody" in element_in_array):
 				index_to_keep.append(index)
 				clinical_header_in_string += str(element)+","
 			index += 1
@@ -86,7 +86,7 @@ os.system("Rscript acm_clinical.R")
 """
 -> create a tex file for each subset of data
 """
-sub_data_list = ["lung", "kidney", "nerveSystem", "skin", "muscleAndSkeletal", "comorbidity", "vascular", "gastro", "heart", "diagnosis"]
+sub_data_list = ["lung", "kidney", "nerveSystem", "skin", "muscleAndSkeletal", "comorbidity", "vascular", "gastro", "heart", "diagnosis", "autoantibody"]
 
 for data in sub_data_list:
 
