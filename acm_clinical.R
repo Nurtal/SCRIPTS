@@ -2,15 +2,29 @@ library(FactoMineR)
 library(factoextra)
 library(corrplot)
 
+
+
+
 #-----------------#
 # DATA PROCESSING #
 #-----------------#
 
-#load data
-#data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
-data <- read.csv("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
-#data <- read.csv("C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
 
+# where am i 
+info = Sys.info()
+os = info[["sysname"]]
+data_file_name = "undef"
+login = info[["login"]]
+
+#load data
+if(identical(os, "Windows")){
+  #-Windows
+  data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", sep="")
+}else{
+  #-Linux
+  data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+}
+data <- read.csv(data_file_name, stringsAsFactors=TRUE)
 
 # drop medication (lots of NA)
 medication_col_names = grep("Medication", names(data), value=TRUE)
@@ -85,7 +99,7 @@ diagnosis_data$X.Clinical.Demography.SEX = as.factor(data$X.Clinical.Demography.
 diagnosis_data$X.Clinical.Sampling.CENTER = as.factor(data$X.Clinical.Sampling.CENTER)
 
 autoantibody_data = data[,grep("Autoantibody", names(data), value=TRUE)]
-autoantibody_data = data[,grep("CALL", names(data), value=TRUE)]
+autoantibody_data = data[,grep("CALL", names(autoantibody_data), value=TRUE)]
 autoantibody_data$X.Clinical.Diagnosis.DISEASE = as.factor(data$X.Clinical.Diagnosis.DISEASE)
 autoantibody_data$X.Clinical.Demography.SEX = as.factor(data$X.Clinical.Demography.SEX)
 autoantibody_data$X.Clinical.Sampling.CENTER = as.factor(data$X.Clinical.Sampling.CENTER)
