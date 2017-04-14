@@ -8,8 +8,8 @@ library(corrplot)
 
 #load data
 #data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
-#data <- read.csv("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
-data <- read.csv("C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+data <- read.csv("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+#data <- read.csv("C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", stringsAsFactors=TRUE)
 
 
 # drop medication (lots of NA)
@@ -85,6 +85,7 @@ diagnosis_data$X.Clinical.Demography.SEX = as.factor(data$X.Clinical.Demography.
 diagnosis_data$X.Clinical.Sampling.CENTER = as.factor(data$X.Clinical.Sampling.CENTER)
 
 autoantibody_data = data[,grep("Autoantibody", names(data), value=TRUE)]
+autoantibody_data = data[,grep("CALL", names(data), value=TRUE)]
 autoantibody_data$X.Clinical.Diagnosis.DISEASE = as.factor(data$X.Clinical.Diagnosis.DISEASE)
 autoantibody_data$X.Clinical.Demography.SEX = as.factor(data$X.Clinical.Demography.SEX)
 autoantibody_data$X.Clinical.Sampling.CENTER = as.factor(data$X.Clinical.Sampling.CENTER)
@@ -121,39 +122,39 @@ for(val in 1:length(sub_data_list)){
   #--------------#
   
   # Plot explain variance
-  #image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "explain_variance_", sub_data_name[val], ".png", sep="")
-  image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "explain_variance_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "explain_variance_", sub_data_name[val], ".png", sep="")
+  #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "explain_variance_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   plot(fviz_screeplot(mca1))
   dev.off()
   
   # Plot most contributing variables for each dimension
-  #image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "variable_contribution_", sub_data_name[val], ".png", sep="")
-  image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "variable_contribution_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "variable_contribution_", sub_data_name[val], ".png", sep="")
+  #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "variable_contribution_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   var <- get_mca_var(mca1)
   corrplot(var$contrib, is.corr = FALSE)
   dev.off()
   
   # Plot individual, colored by sickness, add ellipse
-  #image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_disease_", sub_data_name[val], ".png", sep="")
-  image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_disease_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_disease_", sub_data_name[val], ".png", sep="")
+  #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_disease_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   plot(fviz_mca_ind(mca1, label="none", habillage = sick,
                addEllipses = TRUE, ellipse.level = 0.95))
   dev.off()
   
   # Plot individual, colored by sex, add ellipse
-  #image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_sex_", sub_data_name[val], ".png", sep="")
-  image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_sex_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_sex_", sub_data_name[val], ".png", sep="")
+  #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_sex_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   plot(fviz_mca_ind(mca1, label="none", habillage = sex,
                addEllipses = TRUE, ellipse.level = 0.95))
   dev.off()
   
   # Plot individual, colored by center, add ellipse
-  #image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_center_", sub_data_name[val], ".png", sep="")
-  image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_center_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_center_", sub_data_name[val], ".png", sep="")
+  #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_center_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   plot(fviz_mca_ind(mca1, label="none", habillage = center,
                addEllipses = TRUE, ellipse.level = 0.95))
@@ -161,3 +162,44 @@ for(val in 1:length(sub_data_list)){
   
   
 }
+
+
+#------------#
+# TEST SPACE #
+#------------#
+
+# Get data
+data = merge(autoantibody_data, symptom_data)
+
+# Perfrom ACM
+mca1 = MCA(data, graph = FALSE)
+
+# Extract variable and individuals
+var <- get_mca_var(mca1)
+ind <- get_mca_ind(mca1)
+
+# Extract "labels" for future coloration
+sick <- as.factor(data$X.Clinical.Diagnosis.DISEASE)
+sex <- as.factor(data$X.Clinical.Demography.SEX)
+center <- as.factor(data$X.Clinical.Sampling.CENTER)
+
+
+# Plot explain variance
+fviz_screeplot(mca1)
+
+# Plot most contributing variables for each dimension
+var <- get_mca_var(mca1)
+corrplot(var$contrib, is.corr = FALSE)
+
+# Plot individual, colored by sickness, add ellipse
+fviz_mca_ind(mca1, label="none", habillage = sick,
+                  addEllipses = TRUE, ellipse.level = 0.95)
+
+# Plot individual, colored by sex, add ellipse
+fviz_mca_ind(mca1, label="none", habillage = sex,
+                  addEllipses = TRUE, ellipse.level = 0.95)
+
+# Plot individual, colored by center, add ellipse
+fviz_mca_ind(mca1, label="none", habillage = center,
+                  addEllipses = TRUE, ellipse.level = 0.95)
+
