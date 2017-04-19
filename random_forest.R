@@ -173,3 +173,34 @@ print(data.rf)
 # plot score vs number of tree
 data.rf=randomForest(selected_data, labels, ntree=20000) 
 plot(data.rf$err.rate[,1], type="l")
+print(data.rf)
+
+# plot stuff
+confusion_matrix = data.frame(data.rf$confusion)
+
+hist(confusion_matrix)
+
+x_label = c("MCTD", "PAPs",  "RA", "SjS", "SLE", "SSc", "UCTD")
+machin = as.numeric(confusion_matrix[1,1:7])
+
+# classic plot
+h <- hist(machin, plot = FALSE)
+plot(h, col = "blue", xaxt = "n")
+axis(1, h$mids, labels = x_label, tick = FALSE, padj= -1.5)
+
+
+
+h <- hist(InsectSprays$count, plot = FALSE)
+plot(h, xaxt = "n", xlab = "Insect Sprays", ylab = "Counts",
+     main = "", col = "pink")
+axis(1, h$mids, labels = LETTERS[1:6], tick = FALSE, padj= -1.5)
+
+
+# plot with curve
+x <- machin 
+h<-hist(x, breaks=10, col="red", xlab="Miles Per Gallon", 
+        main="Histogram with Normal Curve") 
+xfit<-seq(min(x),max(x),length=40)
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x)) 
+yfit <- yfit*diff(h$mids[1:2])*length(x) 
+lines(xfit, yfit, col="blue", lwd=2)
