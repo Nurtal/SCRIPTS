@@ -61,8 +61,12 @@ data.close()
 #--------------------#
 # Perform Diagnostic #
 #--------------------#
+scoring_method = "coeff"
 good_diagnostic = 0
 wrong_diagnostic = 0
+RA_patients_count = 0
+
+
 for patient in cohorte:
 	
 	articulation = 0
@@ -70,27 +74,44 @@ for patient in cohorte:
 	RF = 0
 	CRP = 0
 
+	total_score = 0
+
+	if(patient["Disease"] == "RA"):
+		RA_patients_count += 1
+
 	if(patient["articulation"] == "Present"):
 		articulation = 1
+		total_score += 1
 	if(patient["anti_cpp"] == "positive"):
 		anti_cpp = 1
+		total_score += 2
 	if(patient["RF"] == "positive"):
 		RF = 1
+		total_score += 1
 	if(patient["CRP"] == "Yes"):
 		CRP = 1
+		total_score += 2
 
-	# Bazinga
-	# - actually just making up stuff, if
-	#   the score is above a threshold consider
-	#   the patient as RA
-	
-	real_diagnostic = patient["Disease"]
-	score = articulation + anti_cpp + RF + CRP
-	if(score >= 1):
-		if(real_diagnostic == "RA"):
-			good_diagnostic += 1
-		else:
-			wrong_diagnostic += 1
+	if(scoring_method == "classic"):
+		# Bazinga
+		# - actually just making up stuff, if
+		#   the score is above a threshold consider
+		#   the patient as RA
+		real_diagnostic = patient["Disease"]
+		score = articulation + anti_cpp + RF + CRP
+		if(score >= 1):
+			if(real_diagnostic == "RA"):
+				good_diagnostic += 1
+			else:
+				wrong_diagnostic += 1
+	elif(scoring_method == "coeff"):
+		# Same idea, but add coeff
+		real_diagnostic = patient["Disease"]
+		if(total_score >= 2):
+			if(real_diagnostic == "RA"):
+				good_diagnostic += 1
+			else:
+				wrong_diagnostic += 1
 
 
 #---------------------#
@@ -98,8 +119,52 @@ for patient in cohorte:
 #---------------------#
 
 number_of_patient = len(cohorte)
-final_score = (float(good_diagnostic) / float(number_of_patient))*float(100)
-error_score = (float(wrong_diagnostic) / float(number_of_patient))*float(100)
+final_score = (float(good_diagnostic) / float(RA_patients_count))*float(100)
+sensibility_score = (float(len(cohorte) - RA_patients_count) / (float(len(cohorte) - RA_patients_count) + float(wrong_diagnostic)) )*float(100)
 print "=> Final Score is "+str(final_score)
-print "=> Error score is "+str(error_score)
+print "=> Sensibility score is "+str(sensibility_score)
 
+
+#-------------------------------------------#
+# Check RA patients, analyse their features #
+#-------------------------------------------#
+
+articulation_count = 0
+anti_cpp_count = 0
+RF_count = 0
+CRP_count = 0
+RA_patients_count = 0
+
+for patient in cohorte:
+	
+	articulation = 0
+	anti_cpp = 0
+	RF = 0
+	CRP = 0
+
+	if(patient["Disease"] == "RA"):
+		RA_patients_count += 1
+
+		if(patient["articulation"] == "Present"):
+			articulation = 1
+			articulation_count += 1
+		if(patient["anti_cpp"] == "positive"):
+			anti_cpp = 1
+			anti_cpp_count += 1
+		if(patient["RF"] == "positive"):
+			RF = 1
+			RF_count += 1
+		if(patient["CRP"] == "Yes"):
+			CRP = 1
+			CRP_count += 1
+
+
+articulation_score = (float(articulation_count) / float(RA_patients_count))*float(100)
+anti_cpp_score = (float(anti_cpp_count) / float(RA_patients_count))*float(100)
+RF_score = (float(RF_count) / float(RA_patients_count))*float(100)
+CRP_score = (float(CRP_count) / float(RA_patients_count))*float(100)
+
+print "=> Articulation presence is "+str(articulation_score)
+print "=> anti-cpp presence is "+str(anti_cpp_score)
+print "=> RF presence is "+str(RF_score)
+print "=> CRP presence is "+str(CRP_score)
