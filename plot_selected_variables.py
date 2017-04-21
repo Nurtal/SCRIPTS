@@ -112,6 +112,8 @@ for variable in variables_to_values_to_count.keys():
 
 	for values in variables_to_values_to_count[variable]:
 
-		plt.bar(range(len(variables_to_values_to_count[variable][values])), variables_to_values_to_count[variable][values].values())
+		plt.title(graphe_title)
+		plt.bar(range(len(variables_to_values_to_count[variable][values])), variables_to_values_to_count[variable][values].values(), align="center")
 		plt.xticks(range(len(variables_to_values_to_count[variable][values])), variables_to_values_to_count[variable][values].keys())
 		plt.show()
+
