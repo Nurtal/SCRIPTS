@@ -18,6 +18,7 @@ RF_index = -1
 CRP_index = -1
 patient_id_index = -1
 disease_index = -1
+NerveSystem_index = -1
 
 input_file_name = "data/clinical_data_phase_1.csv"
 data = open(input_file_name, "r")
@@ -45,6 +46,8 @@ for line in data:
 				disease_index = index
 			if(var == "\\Clinical\\Sampling\\OMICID"):
 				patient_id_index = index
+			if(var == "\\Clinical\\NerveSystem\\MHPNS"):
+				NerveSystem_index = index
 			index +=1
 	else:
 		patient["articulation"] = line_in_array[articulation_index]
@@ -53,6 +56,7 @@ for line in data:
 		patient["CRP"] = line_in_array[CRP_index]
 		patient["Disease"] = line_in_array[disease_index]
 		patient["ID"] = line_in_array[patient_id_index]
+		patient["NS"] = line_in_array[NerveSystem_index]
 		cohorte.append(patient)
 	cmpt += 1
 data.close()
@@ -66,6 +70,7 @@ good_diagnostic = 0
 wrong_diagnostic = 0
 RA_patients_count = 0
 
+missed_patient = []
 
 for patient in cohorte:
 	
@@ -79,7 +84,7 @@ for patient in cohorte:
 	if(patient["Disease"] == "RA"):
 		RA_patients_count += 1
 
-	if(patient["articulation"] == "Present"):
+	if(patient["articulation"] == "Present" or patient["articulation"] == "Past"):
 		articulation = 1
 		total_score += 1
 	if(patient["anti_cpp"] == "positive"):
@@ -107,11 +112,14 @@ for patient in cohorte:
 	elif(scoring_method == "coeff"):
 		# Same idea, but add coeff
 		real_diagnostic = patient["Disease"]
-		if(total_score >= 2):
+		if(total_score >= 1):
 			if(real_diagnostic == "RA"):
 				good_diagnostic += 1
 			else:
 				wrong_diagnostic += 1
+		else:
+			if(real_diagnostic == "RA"):
+				missed_patient.append(patient)
 
 
 #---------------------#
@@ -168,3 +176,9 @@ print "=> Articulation presence is "+str(articulation_score)
 print "=> anti-cpp presence is "+str(anti_cpp_score)
 print "=> RF presence is "+str(RF_score)
 print "=> CRP presence is "+str(CRP_score)
+
+
+print "-------------------------------------"
+print "=> Missed RA patient:"
+for patient in missed_patient:
+	print patient["ID"] + "\t" + patient["articulation"] + "\t" + patient["anti_cpp"] + "\t" + patient["RF"] + "\t" + patient["CRP"] + "\t" + patient["NS"]

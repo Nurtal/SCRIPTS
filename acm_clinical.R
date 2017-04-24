@@ -109,8 +109,8 @@ symptom_data$X.Clinical.Diagnosis.DISEASE = as.factor(data$X.Clinical.Diagnosis.
 symptom_data$X.Clinical.Demography.SEX = as.factor(data$X.Clinical.Demography.SEX)
 symptom_data$X.Clinical.Sampling.CENTER = as.factor(data$X.Clinical.Sampling.CENTER)
 
-sub_data_list = list(lung_data, kidney_data, nerveSystem_data, skin_data, muscleAndSkeletal_data, comorbidity_data, vascular_data, gastro_data, heart_data, diagnosis_data, autoantibody_data)
-sub_data_name = list("lung", "kidney", "nerveSystem", "skin", "muscleAndSkeletal", "comorbidity", "vascular", "gastro", "heart", "diagnosis", "autoantibody")
+sub_data_list = list(lung_data, kidney_data, nerveSystem_data, skin_data, muscleAndSkeletal_data, comorbidity_data, vascular_data, gastro_data, heart_data, diagnosis_data, autoantibody_data, symptom_data)
+sub_data_name = list("lung", "kidney", "nerveSystem", "skin", "muscleAndSkeletal", "comorbidity", "vascular", "gastro", "heart", "diagnosis", "autoantibody", "symptom")
 
 
 for(val in 1:length(sub_data_list)){
@@ -136,14 +136,14 @@ for(val in 1:length(sub_data_list)){
   #--------------#
   
   # Plot explain variance
-  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "explain_variance_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "explain_variance_", sub_data_name[val], ".png", sep="")
   #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "explain_variance_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   plot(fviz_screeplot(mca1))
   dev.off()
   
   # Plot most contributing variables for each dimension
-  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "variable_contribution_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "variable_contribution_", sub_data_name[val], ".png", sep="")
   #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "variable_contribution_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   var <- get_mca_var(mca1)
@@ -151,7 +151,7 @@ for(val in 1:length(sub_data_list)){
   dev.off()
   
   # Plot individual, colored by sickness, add ellipse
-  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_disease_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_disease_", sub_data_name[val], ".png", sep="")
   #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_disease_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   plot(fviz_mca_ind(mca1, label="none", habillage = sick,
@@ -159,7 +159,7 @@ for(val in 1:length(sub_data_list)){
   dev.off()
   
   # Plot individual, colored by sex, add ellipse
-  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_sex_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_sex_", sub_data_name[val], ".png", sep="")
   #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_sex_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   plot(fviz_mca_ind(mca1, label="none", habillage = sex,
@@ -167,7 +167,7 @@ for(val in 1:length(sub_data_list)){
   dev.off()
   
   # Plot individual, colored by center, add ellipse
-  image_file_name = paste("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_center_", sub_data_name[val], ".png", sep="")
+  image_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_center_", sub_data_name[val], ".png", sep="")
   #image_file_name = paste("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "individuals_center_", sub_data_name[val], ".png", sep="")
   png(filename=image_file_name)
   plot(fviz_mca_ind(mca1, label="none", habillage = center,
