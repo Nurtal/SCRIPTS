@@ -86,7 +86,7 @@ os.system("Rscript acm_clinical.R")
 """
 -> create a tex file for each subset of data
 """
-sub_data_list = ["lung", "kidney", "nerveSystem", "skin", "muscleAndSkeletal", "comorbidity", "vascular", "gastro", "heart", "diagnosis", "autoantibody"]
+sub_data_list = ["lung", "kidney", "nerveSystem", "skin", "muscleAndSkeletal", "comorbidity", "vascular", "gastro", "heart", "diagnosis", "autoantibody", "symptom"]
 
 for data in sub_data_list:
 
