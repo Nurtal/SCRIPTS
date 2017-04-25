@@ -11,6 +11,11 @@ library(datasets)
 data(iris)
 summary(iris)
 
+
+
+
+
+
 #--Ameva criterion value
 a=c(2,5,1,1,3,3)
 m=matrix(a,ncol=3,byrow=TRUE)
@@ -35,3 +40,4 @@ disc.Topdown(iris, method=2)
 
 ##---- Ameva discretization ----
 disc.Topdown(iris, method=3)
+
