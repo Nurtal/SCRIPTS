@@ -11,16 +11,20 @@ login = info[["login"]]
 #load data
 if(identical(os, "Windows")){
   #-Windows
-  data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
+  #data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
+  data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
+  
+  
 }else{
   #-Linux
   data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
 }
 
-flow_data <- read.csv(data_file_name, header = T, stringsAsFactors = F, sep="\t")
+flow_data <- read.csv(data_file_name, header = T, stringsAsFactors = F, sep=",")
 
 
 # convert disease to 1, control to 0
+flow_data$X.Clinical.Diagnosis.DISEASE[is.na(flow_data$X.Clinical.Diagnosis.DISEASE)] <- "Control"
 df <- flow_data
 m <- as.matrix(df)
 m[m=="Control"] <- 0
@@ -36,23 +40,18 @@ flow_data <- as.data.frame(m)
 
 # Delete some variables
 flow_data$Row.names <- NULL
-flow_data$P1_CD14LOWCD16POS_NONCLASSICMONOCYTES <- NULL
-flow_data$P2_DRNEGCD123POS_BASOPHILS <- NULL
-flow_data$P2_LINNEGDRPOSCD11CNEGCD123POS_PDC <- NULL
-flow_data$P2_LINNEGDRPOSCD11CPOSCD123NEGCD1CPOS_MDC1 <-NULL
-flow_data$P2_LINNEGDRPOSCD11CPOSCD123NEGCD141POS_MDC2 <- NULL
 
 # Remove patient
-flow_data<-flow_data[!(flow_data$OMICID=="32151646"),]
-flow_data<-flow_data[!(flow_data$OMICID=="32151888"),]
+flow_data<-flow_data[!(flow_data$X.Clinical.Sampling.OMICID=="N32151646"),]
+flow_data<-flow_data[!(flow_data$X.Clinical.Sampling.OMICID=="N32151888"),]
 
 # Split into Panel
-flow_data_panel_1 <- flow_data[,grep("P1_|diagnostic|OMICID", colnames(flow_data))]
-flow_data_panel_2 <- flow_data[,grep("P2_|diagnostic|OMICID", colnames(flow_data))]
-flow_data_panel_3 <- flow_data[,grep("P3_|diagnostic|OMICID", colnames(flow_data))]
-flow_data_panel_4 <- flow_data[,grep("P4_|diagnostic|OMICID", colnames(flow_data))]
-flow_data_panel_5 <- flow_data[,grep("P5_|diagnostic|OMICID", colnames(flow_data))]
-flow_data_panel_6 <- flow_data[,grep("P6_|diagnostic|OMICID", colnames(flow_data))]
+flow_data_panel_1 <- flow_data[,grep("P1|DISEASE|OMICID", colnames(flow_data))]
+flow_data_panel_2 <- flow_data[,grep("P2|DISEASE|OMICID", colnames(flow_data))]
+flow_data_panel_3 <- flow_data[,grep("P3|DISEASE|OMICID", colnames(flow_data))]
+flow_data_panel_4 <- flow_data[,grep("P4|DISEASE|OMICID", colnames(flow_data))]
+flow_data_panel_5 <- flow_data[,grep("P5|DISEASE|OMICID", colnames(flow_data))]
+flow_data_panel_6 <- flow_data[,grep("P6|DISEASE|OMICID", colnames(flow_data))]
 
 
 # Remove NA or perform Imputation
@@ -68,8 +67,7 @@ flow_data_panel_6 <- flow_data_panel_6[complete.cases(flow_data_panel_6),]
 panel_to_process <- flow_data_panel_6
 
 # Run Boruta
-boruta.train <- Boruta(diagnostic~.-OMICID, data = panel_to_process, doTrace = 2)
-
+boruta.train <- Boruta(X.Clinical.Diagnosis.DISEASE~.-X.Clinical.Sampling.OMICID, data = panel_to_process, doTrace = 2)
 
 # Display results
 plot(boruta.train, xlab = "", xaxt = "n")
@@ -85,8 +83,8 @@ axis(side = 1,las=2,labels = names(Labels),
 # Supplemental Results
 final.boruta <- TentativeRoughFix(boruta.train)
 
-# Display supplemental results
-png("/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/feature_selection_panel_1.png", width=4, height=4, units="in", res=300)
+## Display supplemental results
+#png("/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/feature_selection_panel_1.png", width=4, height=4, units="in", res=300)
 plot(final.boruta, xlab = "", xaxt = "n")
 lz<-lapply(1:ncol(boruta.train$ImpHistory),function(i)
   boruta.train$ImpHistory[is.finite(boruta.train$ImpHistory[,i]),i])
@@ -95,17 +93,19 @@ names(lz) <- colnames(boruta.train$ImpHistory)
 Labels <- sort(sapply(lz,median))
 axis(side = 1,las=2,labels = names(Labels),
      at = 1:ncol(boruta.train$ImpHistory), cex.axis = 0.7)
-dev.off()
+#dev.off()
 
 # Final steps
 getSelectedAttributes(final.boruta, withTentative = F)
 boruta.df <- attStats(final.boruta)
-write.table(boruta.df, "/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/feature_selection_panel_1.txt", sep=";")
+#write.table(boruta.df, "/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/feature_selection_panel_1.txt", sep=";")
+write.table(boruta.df, "C:\\Users\\Beckman-Coulter\\Desktop\\Nathan\\SCRIPTS\\data\\feature_selection_panel_6.txt", sep=";")
 
 # Write new tables
 selected_variables <- getSelectedAttributes(final.boruta, withTentative = F)
 f <- paste(selected_variables, collapse='|')
-f <- paste(c(f, "diagnostic|OMICID"), collapse = '|')
+f <- paste(c(f, "X.Clinical.Diagnosis.DISEASE|X.Clinical.Sampling.OMICID"), collapse = '|')
 panel_to_process <- panel_to_process[,grep(f, colnames(panel_to_process))]
 
-write.table(panel_to_process, "/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/panel_6_filtered.txt", sep=";")
+#write.table(panel_to_process, "/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/panel_6_filtered.txt", sep=";")
+write.table(panel_to_process, "C:\\Users\\Beckman-Coulter\\Desktop\\Nathan\\SCRIPTS\\data\\panel_6_filtered.txt", sep=";")
