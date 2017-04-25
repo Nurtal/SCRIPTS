@@ -2,14 +2,22 @@
 library(Boruta)
 
 # load data
-flow_data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/flowcyto.txt", header = T, stringsAsFactors = F, sep="\t")
-diagnosic_table = read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/Github/RD/sample/DATA/patientIndex.csv", header = F, sep=";")
-colnames(diagnosic_table) <- c("OMICID", "diagnostic")
+# where am i 
+info = Sys.info()
+os = info[["sysname"]]
+data_file_name = "undef"
+login = info[["login"]]
 
-rownames(diagnosic_table) <- diagnosic_table$OMICID
-rownames(flow_data) <- flow_data$OMICID
-diagnosic_table$OMICID <- NULL
-flow_data <- merge(diagnosic_table, flow_data, by=0)
+#load data
+if(identical(os, "Windows")){
+  #-Windows
+  data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
+}else{
+  #-Linux
+  data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
+}
+
+flow_data <- read.csv(data_file_name, header = T, stringsAsFactors = F, sep="\t")
 
 
 # convert disease to 1, control to 0
@@ -35,8 +43,8 @@ flow_data$P2_LINNEGDRPOSCD11CPOSCD123NEGCD1CPOS_MDC1 <-NULL
 flow_data$P2_LINNEGDRPOSCD11CPOSCD123NEGCD141POS_MDC2 <- NULL
 
 # Remove patient
-flow_data<-flow_data[!(traindata$OMICID=="32151646"),]
-flow_data<-flow_data[!(traindata$OMICID=="32151888"),]
+flow_data<-flow_data[!(flow_data$OMICID=="32151646"),]
+flow_data<-flow_data[!(flow_data$OMICID=="32151888"),]
 
 # Split into Panel
 flow_data_panel_1 <- flow_data[,grep("P1_|diagnostic|OMICID", colnames(flow_data))]
