@@ -27,7 +27,7 @@ if(identical(os, "Windows")){
   #-Linux
   data_file_name = ("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv")
 }
-data <- read.csv(data_file_name, stringsAsFactors=FALSE, sep=";")
+data <- read.csv(data_file_name, header = T, sep=";")
 
 # Convert binary values to literal
 df <- data
@@ -46,8 +46,10 @@ names(data)
 #rownames(data) <- data$X.Clinical.Sampling.OMICID
 data$X.Clinical.Sampling.OMICID <- NULL
 
+write.table(data, "C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\test.txt", sep=",")
+data = read.csv("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\test_2.txt",header = T, sep=",")
 
-play_data = read.csv("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\play.txt",header = T, sep=",")
+play_data = read.csv("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\play.txt",header = T, sep=",")
 
 
 #--Ameva criterion value
@@ -73,5 +75,5 @@ cm$Disc.data
 disc.Topdown(iris, method=2)
 
 ##---- Ameva discretization ----
-machin = disc.Topdown(play_data, method=1)
+machin = disc.Topdown(data, method=1)
 truc = machin$Disc.data
