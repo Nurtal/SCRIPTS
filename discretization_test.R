@@ -46,6 +46,7 @@ names(data)
 #rownames(data) <- data$X.Clinical.Sampling.OMICID
 data$X.Clinical.Sampling.OMICID <- NULL
 
+
 play_data = read.csv("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\play.txt",header = T, sep=",")
 
 
@@ -72,5 +73,5 @@ cm$Disc.data
 disc.Topdown(iris, method=2)
 
 ##---- Ameva discretization ----
-machin = disc.Topdown(data, method=1)
+machin = disc.Topdown(play_data, method=1)
 truc = machin$Disc.data
