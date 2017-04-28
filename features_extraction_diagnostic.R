@@ -103,7 +103,7 @@ axis(side = 1,las=2,labels = names(Labels),
 getSelectedAttributes(final.boruta, withTentative = F)
 boruta.df <- attStats(final.boruta)
 #write.table(boruta.df, "/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/feature_selection_panel_1.txt", sep=";")
-write.table(boruta.df, "C:\\Users\\Beckman-Coulter\\Desktop\\Nathan\\SCRIPTS\\data\\feature_selection_panel_6.txt", sep=";")
+write.table(boruta.df, "C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\feature_selection_diag_RA.txt", sep=";")
 
 # Write new tables
 selected_variables <- getSelectedAttributes(final.boruta, withTentative = F)
