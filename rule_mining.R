@@ -1,4 +1,5 @@
 library(arules)
+library(arulesViz)
 
 
 # where am i 
@@ -25,8 +26,20 @@ variable_to_keep <- c(variable_to_keep, "X.Clinical.Diagnosis.DISEASE")
 data = data[ , (names(data) %in% variable_to_keep)]
 
 # Deal with NA
-
+# use only patient without NA ( drop control in the process ...)
+data = data[complete.cases(data),]
+data <- data.frame(lapply(data, as.factor))
 
 
 # mining
 rules <- apriori(data)
+rules <- apriori(data,
+                 parameter = list(minlen=2, supp=0.005, conf=0.8),
+                 appearance = list(rhs=c("X.Clinical.Diagnosis.DISEASE=SjS"),
+                                   default="lhs"),
+                 control = list(verbose=F))
+rules.sorted <- sort(rules, by="lift")
+inspect(rules)
+
+# plot stuff
+plot(rules)
