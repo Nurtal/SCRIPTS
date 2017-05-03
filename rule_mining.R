@@ -41,5 +41,18 @@ rules <- apriori(data,
 rules.sorted <- sort(rules, by="lift")
 inspect(rules)
 
+
+# find redundant rules
+# problem there, select all rules
+subset.matrix <- is.subset(rules.sorted, rules.sorted)
+subset.matrix[lower.tri(subset.matrix, diag=T)] <- NA
+redundant <- colSums(subset.matrix, na.rm=T) >= 1
+which(redundant)
+
+# remove redundant rules
+rules.pruned <- rules.sorted[!redundant]
+inspect(rules.pruned)
+
 # plot stuff
 plot(rules)
+plot(rules, method="graph", control=list(type="items"))
