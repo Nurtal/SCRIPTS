@@ -35,18 +35,18 @@ data <- data.frame(lapply(data, as.factor))
 # mining
 rules <- apriori(data)
 rules <- apriori(data,
-                 parameter = list(minlen=2, supp=0.05, conf=0.8),
+                 parameter = list(minlen=2, supp=0.07, conf=0.80),
                  appearance = list(rhs=c("X.Clinical.Diagnosis.DISEASE=SjS"),
                                    default="lhs"),
-                 control = list(verbose=F))
+                 control = list(verbose=T))
 rules.sorted <- sort(rules, by="lift")
 inspect(rules)
 
 
 # write rules into file
 rules_df = as(rules, "data.frame");
-write.table(rules_df, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_SjS.txt", sep=",")
-
+write.table(rules_df, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_SjS.txt", sep=";")
+write.table(rules_df, "C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_SjS.txt", sep=";")
 
 
 # find redundant rules
