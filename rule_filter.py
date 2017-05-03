@@ -1,9 +1,9 @@
 
-data_filename = "rules_SjS.txt"
+data_filename = "rules_RA.txt"
 new_data_file_name = data_filename.split(".")
 new_data_file_name = new_data_file_name[0]+"_filtered.txt"
 support_treshold = 0.07
-confidence_treshold = 0.85
+confidence_treshold = 1
 lift_treshold = 8
 
 

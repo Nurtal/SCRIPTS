@@ -21,10 +21,14 @@ data <- read.csv(data_file_name, stringsAsFactors=TRUE)
 
 
 ## variable to keep
-variable_to_keep <- scan("C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\feature_selection_diag_SjS_formated.txt", what="", sep="\n")
-variable_to_keep <- scan("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\feature_selection_diag_SjS_formated.txt", what="", sep="\n")
+variable_to_keep <- scan("C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\feature_selection_diag_RA_formated.txt", what="", sep="\n")
+variable_to_keep <- scan("C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\feature_selection_diag_RA_formated.txt", what="", sep="\n")
 variable_to_keep <- c(variable_to_keep, "X.Clinical.Diagnosis.DISEASE")
 data = data[ , (names(data) %in% variable_to_keep)]
+
+# drop MHTERM
+drops_variable = c("X.Clinical.Diagnosis.MHTERM")
+data = data[ , !(names(data) %in% drops_variable)]
 
 # Deal with NA
 # use only patient without NA ( drop control in the process ...)
@@ -35,8 +39,8 @@ data <- data.frame(lapply(data, as.factor))
 # mining
 rules <- apriori(data)
 rules <- apriori(data,
-                 parameter = list(minlen=2, supp=0.07, conf=0.80),
-                 appearance = list(rhs=c("X.Clinical.Diagnosis.DISEASE=SjS"),
+                 parameter = list(minlen=2, supp=0.14, conf=0.8),
+                 appearance = list(rhs=c("X.Clinical.Diagnosis.DISEASE=RA"),
                                    default="lhs"),
                  control = list(verbose=T))
 rules.sorted <- sort(rules, by="lift")
@@ -45,8 +49,8 @@ inspect(rules)
 
 # write rules into file
 rules_df = as(rules, "data.frame");
-write.table(rules_df, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_SjS.txt", sep=";")
-write.table(rules_df, "C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_SjS.txt", sep=";")
+write.table(rules_df, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_RA.txt", sep=";")
+write.table(rules_df, "C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_RA.txt", sep=";")
 
 
 # find redundant rules
