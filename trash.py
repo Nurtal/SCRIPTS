@@ -107,8 +107,6 @@ def reformat_for_discretization():
 	input_data.close()
 
 
-
-
 # reformat selected variable for rules extratction
 input_data = open("data/feature_selection_diag_SjS.txt", "r")
 output_data = open("data/feature_selection_diag_SjS_formated.txt", "w")
