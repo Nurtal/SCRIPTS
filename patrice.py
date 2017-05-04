@@ -7,7 +7,7 @@ import numpy
 # get files
 data_files = glob.glob("*.csv")
 result_file = open("patrice_results.csv", "w")
-header = "file_name,max_MFI,min_MFI (mean first time serie),max_derivative,min_derivative,mean_pos_derivative,mean_neg_derivative\n"
+header = "file_name,max_MFI,min_MFI (mean first time serie),max_derivative,min_derivative,mean_pos_derivative,mean_neg_derivative,amplitude\n"
 result_file.write(header)
 
 # open file
@@ -72,7 +72,9 @@ for data in data_files:
 	mean_pos_derivative = numpy.mean(postive_derivative)
 	mean_neg_derivative = numpy.mean(negative_derivative)
 
-	line_to_write = str(data)+","+str(max_y)+","+str(mean_first_range)+","+str(max_gradient)+","+str(min_gradient)+","+str(mean_pos_derivative)+","+str(mean_neg_derivative)+"\n"
+	amplitude = float(max_y) - float(mean_first_range)
+
+	line_to_write = str(data)+","+str(max_y)+","+str(mean_first_range)+","+str(max_gradient)+","+str(min_gradient)+","+str(mean_pos_derivative)+","+str(mean_neg_derivative)+","+str(amplitude)+"\n"
 	result_file.write(line_to_write) 
 	
 	input_data.close()
