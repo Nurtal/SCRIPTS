@@ -70,7 +70,7 @@ plot(rules, method="graph", control=list(type="items"))
 plot(rules, method="paracoord", control=list(reorder=TRUE))
 plot(rules, method="graph", control=list(type="itemsets"))
 
-# write rules into file
-rules_df = as(rules, "data.frame");
+# write non redundant rules into file
+rules_df = as(rules_filtered, "data.frame");
 write.table(rules_df, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_non_redundant_SjS.txt", sep=";")
 write.table(rules_df, "C:\\Users\\PC_immuno\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\rules_non_redundant_RA.txt", sep=";")

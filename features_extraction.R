@@ -28,14 +28,14 @@ flow_data$X.Clinical.Diagnosis.DISEASE[is.na(flow_data$X.Clinical.Diagnosis.DISE
 df <- flow_data
 m <- as.matrix(df)
 m[m=="Control"] <- 0
-m[m=="SLE"] <- 1
-m[m=="RA"] <- 1
-m[m=="UCTD"] <- 1
-m[m=="undef"] <- 1
-m[m=="SSc"] <- 1
+m[m=="SLE"] <- 0
+m[m=="RA"] <- 0
+m[m=="UCTD"] <- 0
+m[m=="undef"] <- 0
+m[m=="SSc"] <- 0
 m[m=="SjS"] <- 1
-m[m=="PAPs"] <- 1
-m[m=="MCTD"] <- 1
+m[m=="PAPs"] <- 0
+m[m=="MCTD"] <- 0
 flow_data <- as.data.frame(m)
 
 # Delete some variables
