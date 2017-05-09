@@ -80,8 +80,8 @@ def reformat_for_discretization():
 	"""
 	reformat data for the discretization process
 	"""
-	input_data = open("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\test.txt", "r")
-	output_data = open("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\test_2.txt", "w")
+	input_data = open("data/discretization_data_to_process.txt", "r")
+	output_data = open("data/discretization_data_processed.txt", "w")
 	for line in input_data:
 		line = line.split("\n")
 		line = line[0]
@@ -132,4 +132,4 @@ def reformat_selected_variables():
 
 
 """EXECUTE SPACE"""
-forgotten_stuff()
+reformat_for_discretization()
