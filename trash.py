@@ -107,20 +107,29 @@ def reformat_for_discretization():
 	input_data.close()
 
 
-# reformat selected variable for rules extratction
-input_data = open("data/feature_selection_diag_RA.txt", "r")
-output_data = open("data/feature_selection_diag_RA_formated.txt", "w")
 
-for line in input_data:
-	line = line.split("\n")
-	line = line[0]
+def reformat_selected_variables():
+	"""
+	reformat selected variable for rules extratction
+	"""
 
-	line_in_array = line.split(";")
-	scalar_to_write = line_in_array[0]
-	scalar_to_write = scalar_to_write.replace("\"", "")
+	input_data = open("data/feature_selection_diag_RA.txt", "r")
+	output_data = open("data/feature_selection_diag_RA_formated.txt", "w")
 
-	if(line_in_array[-1] == "\"Confirmed\""):
-		output_data.write(scalar_to_write+"\n")
+	for line in input_data:
+		line = line.split("\n")
+		line = line[0]
 
-input_data.close()
-output_data.close()
+		line_in_array = line.split(";")
+		scalar_to_write = line_in_array[0]
+		scalar_to_write = scalar_to_write.replace("\"", "")
+
+		if(line_in_array[-1] == "\"Confirmed\""):
+			output_data.write(scalar_to_write+"\n")
+
+	input_data.close()
+	output_data.close()
+
+
+"""EXECUTE SPACE"""
+forgotten_stuff()
