@@ -23,10 +23,56 @@ login = info[["login"]]
 if(identical(os, "Windows")){
   #-Windows
   data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\panel_1_filtered.txt", sep="")
+  play_data_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\play.txt", sep="")
+  flow_data_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
+  tmp_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\discretization_data_to_process.txt", sep="")
+  reload_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\discretization_data_processed.txt", sep="")
+  save_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\data_discretized.txt", sep="")
+  
+  
 }else{
   #-Linux
   data_file_name = ("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv")
 }
+
+
+
+
+
+
+## FOW CYTOMETRY DATA DISCRETIZATION ##
+
+## Load data
+data <- read.csv(flow_data_file, header = T, sep=",")
+
+## Use only patient without NA ( drop control in the process ...)
+data = data[complete.cases(data),]
+data <- data.frame(lapply(data, as.factor))
+
+
+## Move Disease column to the end of the data frame
+col_idx <- grep("DISEASE", names(data))
+data <- data[, c((1:ncol(data))[-col_idx],col_idx)]
+
+## Remove the column
+data$X.Clinical.Sampling.OMICID <- NULL
+
+## Write data in a file to be reformat by a python script
+write.table(data, tmp_file, sep=",")
+## Reoload data
+data = read.csv(reload_file,header = T, sep=",")
+
+## Ameva discretization
+discretization = disc.Topdown(data, method=1)
+data_discrete = discretization$Disc.data
+
+## Save in a file
+write.table(data_discrete, save_file, sep=",")
+
+
+
+## TEST SPACE ##
+
 data <- read.csv(data_file_name, header = T, sep=";")
 
 # Convert binary values to literal
@@ -46,10 +92,11 @@ names(data)
 #rownames(data) <- data$X.Clinical.Sampling.OMICID
 data$X.Clinical.Sampling.OMICID <- NULL
 
+
 write.table(data, "C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\test.txt", sep=",")
 data = read.csv("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\test_2.txt",header = T, sep=",")
 
-play_data = read.csv("C:\\Users\\PC_immuno\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\play.txt",header = T, sep=",")
+play_data = read.csv(play_data_file,header = T, sep=",")
 
 
 #--Ameva criterion value
@@ -77,3 +124,8 @@ disc.Topdown(iris, method=2)
 ##---- Ameva discretization ----
 machin = disc.Topdown(data, method=1)
 truc = machin$Disc.data
+
+
+
+
+
