@@ -11,7 +11,7 @@ login = info[["login"]]
 #load data
 if(identical(os, "Windows")){
   #-Windows
-  #data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
+  data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
   data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
   
   
@@ -20,7 +20,7 @@ if(identical(os, "Windows")){
   data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
 }
 
-flow_data <- read.csv(data_file_name, header = T, stringsAsFactors = F, sep=",")
+flow_data <- read.csv(data_file_name, header = T, stringsAsFactors = T, sep=",")
 
 
 # convert disease to 1, control to 0
@@ -70,11 +70,15 @@ panel_to_process <- flow_data_panel_6
 boruta.train <- Boruta(X.Clinical.Diagnosis.DISEASE~.-X.Clinical.Sampling.OMICID, data = panel_to_process, doTrace = 2)
 
 # Display results
+layout(rbind(1,2), heights=c(7,1))  # put legend on bottom 1/8th of the chart
+
+
 plot(boruta.train, xlab = "", xaxt = "n")
 lz<-lapply(1:ncol(boruta.train$ImpHistory),function(i)
   boruta.train$ImpHistory[is.finite(boruta.train$ImpHistory[,i]),i])
 
 names(lz) <- colnames(boruta.train$ImpHistory)
+
 Labels <- sort(sapply(lz,median))
 axis(side = 1,las=2,labels = names(Labels),
      at = 1:ncol(boruta.train$ImpHistory), cex.axis = 0.7)
