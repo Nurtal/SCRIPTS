@@ -81,7 +81,8 @@ library(colorspace) # get nice colors
 
 
 #True data
-data <- read.csv(data_file_name, header = T, sep=",")
+data_file_name = "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\panel_1_filtered.txt_discrete"
+data <- read.csv(data_file_name, header = T, sep=";")
 data2 <- data[,-which( colnames(data)=="X.Clinical.Diagnosis.DISEASE" )]
 disease_labels <- data[,which( colnames(data)=="X.Clinical.Diagnosis.DISEASE" )]
 disease_col <- rev(rainbow_hcl(7))[as.numeric(disease_labels)]
@@ -97,7 +98,7 @@ legend(x = 0.05, y = 0.4, cex = 2,
        fill = unique(disease_col))
 par(xpd = NA)
 
-par(las = 1, mar = c(4.5, 3, 3, 2) + 0.1, cex = .8)
+par(las = 2, mar = c(4.5, 3, 3, 2) + 0.1, cex = .8)
 MASS::parcoord(data2, col = disease_col, var.label = TRUE, lwd = 2)
 
 # Add Title
@@ -112,7 +113,7 @@ par(xpd = NA)
 
 d_data <- dist(data2) # method="man" # is a bit better
 hc_data <- hclust(d_data, method = "complete")
-disease <- rev(levels(data[,117]))
+disease <- rev(levels(data[,which( colnames(data)=="X.Clinical.Diagnosis.DISEASE" )]))
 
 
 library(dendextend)
@@ -121,16 +122,16 @@ dend <- as.dendrogram(hc_data)
 #dend <- rotate(dend, 1:150)
 
 # Color the branches based on the clusters:
-dend <- color_branches(dend, k=7) #, groupLabels=iris_species)
+dend <- color_branches(dend, k=8) #, groupLabels=iris_species)
 
 # Manually match the labels, as much as possible, to the real classification of the flowers:
 labels_colors(dend) <-
-  rainbow_hcl(7)[sort_levels_values(
-    as.numeric(data[,7])[order.dendrogram(dend)]
+  rainbow_hcl(8)[sort_levels_values(
+    as.numeric(data[,8])[order.dendrogram(dend)]
   )]
 
 # We shall add the flower type to the labels:
-labels(dend) <- paste(as.character(data[,117])[order.dendrogram(dend)],
+labels(dend) <- paste(as.character(data[,which( colnames(data)=="X.Clinical.Diagnosis.DISEASE" )])[order.dendrogram(dend)],
                       "(",labels(dend),")", 
                       sep = "")
 # We hang the dendrogram a bit:
@@ -144,7 +145,7 @@ plot(dend,
      main = "Clustered Iris data set
      (the labels give the true flower species)", 
      horiz =  TRUE,  nodePar = list(cex = .007))
-legend("topleft", legend = disease, fill = rainbow_hcl(7))
+legend("bottom", legend = disease, fill = rainbow_hcl(8))
 
 par(mar = rep(0,4))
 circlize_dendrogram(dend)

@@ -20,6 +20,7 @@ login = info[["login"]]
 if(identical(os, "Windows")){
   #-Windows
   data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\clinical_data_phase_1.csv", sep="")
+  flow_data_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\data_discretized.txt", sep="")
 }else{
   #-Linux
   data <- read.csv("/home/foulquier/Bureau/SpellCraft/WorkSpace/SCRIPTS/data/clinical_data_phase_1.csv", stringsAsFactors=TRUE)
@@ -216,4 +217,60 @@ fviz_mca_ind(mca1, label="none", habillage = sex,
 # Plot individual, colored by center, add ellipse
 fviz_mca_ind(mca1, label="none", habillage = center,
                   addEllipses = TRUE, ellipse.level = 0.95)
+
+
+#-------------#
+## FLOW DATA ##
+#-------------#
+
+
+flow_data_name ="C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\panel_6_filtered.txt_discrete"
+data <- read.csv(flow_data_name, stringsAsFactors=TRUE, sep=";")
+
+
+# use only patient without NA ( drop control in the process ...)
+data = data[complete.cases(data),]
+data <- data.frame(lapply(data, as.factor))
+
+
+# Split into Panel
+flow_data_panel_1 <- data[,grep("P1|DISEASE|OMICID", colnames(data))]
+flow_data_panel_2 <- data[,grep("P2|DISEASE|OMICID", colnames(data))]
+flow_data_panel_3 <- data[,grep("P3|DISEASE|OMICID", colnames(data))]
+flow_data_panel_4 <- data[,grep("P4|DISEASE|OMICID", colnames(data))]
+flow_data_panel_5 <- data[,grep("P5|DISEASE|OMICID", colnames(data))]
+flow_data_panel_6 <- data[,grep("P6|DISEASE|OMICID", colnames(data))]
+
+data <- flow_data_panel_6
+panel = "panel_6"
+
+# Perfrom ACM
+mca1 = MCA(data, graph = FALSE)
+
+# Extract variable and individuals
+var <- get_mca_var(mca1)
+ind <- get_mca_ind(mca1)
+
+# Extract "labels" for future coloration
+sick <- as.factor(data$X.Clinical.Diagnosis.DISEASE)
+sex <- as.factor(data$X.Clinical.Demography.SEX)
+center <- as.factor(data$X.Clinical.Sampling.CENTER)
+
+
+# Plot explain variance
+fviz_screeplot(mca1)
+
+# Plot most contributing variables for each dimension
+image_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "graphe_1_", panel, ".png", sep="")
+png(filename=image_file_name)
+var <- get_mca_var(mca1)
+corrplot(var$contrib, is.corr = FALSE)
+dev.off()
+
+# Plot individual, colored by sickness, add ellipse
+image_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\images\\", "graphe_2_", panel, ".png", sep="")
+png(filename=image_file_name)
+fviz_mca_ind(mca1, label="none", habillage = sick,
+             addEllipses = TRUE, ellipse.level = 0.95)
+dev.off()
 

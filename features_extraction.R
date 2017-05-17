@@ -53,7 +53,7 @@ flow_data_panel_3 <- flow_data[,grep("P3|DISEASE|OMICID", colnames(flow_data))]
 flow_data_panel_4 <- flow_data[,grep("P4|DISEASE|OMICID", colnames(flow_data))]
 flow_data_panel_5 <- flow_data[,grep("P5|DISEASE|OMICID", colnames(flow_data))]
 flow_data_panel_6 <- flow_data[,grep("P6|DISEASE|OMICID", colnames(flow_data))]
-
+flow_data_all <- flow_data
 
 # Remove NA or perform Imputation
 flow_data_panel_1 <- flow_data_panel_1[complete.cases(flow_data_panel_1),]
@@ -63,9 +63,11 @@ flow_data_panel_4 <- flow_data_panel_4[complete.cases(flow_data_panel_4),]
 flow_data_panel_5 <- flow_data_panel_5[complete.cases(flow_data_panel_5),]
 flow_data_panel_6 <- flow_data_panel_6[complete.cases(flow_data_panel_6),]
 
+flow_data_all <-flow_data_all[complete.cases(flow_data_all),]
+
 
 # Panel to Process:
-panel_to_process <- flow_data_panel_3
+panel_to_process <- flow_data_all
 
 # Run Boruta
 #boruta.train <- Boruta(X.Clinical.Diagnosis.DISEASE~.-X.Clinical.Sampling.OMICID, data = panel_to_process, doTrace = 2)
@@ -103,7 +105,7 @@ axis(side = 1,las=2,labels = names(Labels),
 getSelectedAttributes(final.boruta, withTentative = F)
 boruta.df <- attStats(final.boruta)
 #write.table(boruta.df, "/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/feature_selection_panel_1.txt", sep=";")
-write.table(boruta.df, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\feature_selection_panel_3_discrete.txt", sep=";")
+write.table(boruta.df, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\feature_selection_panel_all_discrete.txt", sep=";")
 
 # Write new tables
 selected_variables <- getSelectedAttributes(final.boruta, withTentative = F)
@@ -112,4 +114,4 @@ f <- paste(c(f, "X.Clinical.Diagnosis.DISEASE|X.Clinical.Sampling.OMICID"), coll
 panel_to_process <- panel_to_process[,grep(f, colnames(panel_to_process))]
 
 #write.table(panel_to_process, "/home/foulquier/Bureau/SpellCraft/WorkSpace/FeatureSelection/panel_6_filtered.txt", sep=";")
-write.table(panel_to_process, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\panel_3_filtered.txt_discrete", sep=";")
+write.table(panel_to_process, "C:\\Users\\NaturalKiller01\\Desktop\\Nathan\\Spellcraft\\SCRIPTS\\data\\panel_all_filtered.txt_discrete", sep=";")
