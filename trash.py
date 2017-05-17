@@ -131,5 +131,60 @@ def reformat_selected_variables():
 	output_data.close()
 
 
+
+
+def convert_NA_disease_to_Control(input_file_name):
+	"""
+	pretty much what it's said
+	"""
+	output_file_name = input_file_name.split(".")
+	output_file_name = output_file_name[0]+"with_control.csv"
+
+	disease_index = -1
+
+	input_data = open(input_file_name, "r")
+	output_data = open(output_file_name, "w")
+	cmpt = 0
+	for line in input_data:
+		line = line.split("\n")
+		line = line[0]
+		line_in_array = line.split(",")
+		
+		if(cmpt == 0):
+			index = 0
+			for variable in line_in_array:
+				if(variable == "\\Clinical\\Diagnosis\\DISEASE"):
+					disease_index = index
+				index += 1
+
+			output_data.write(line+"\n")
+
+		else:
+			index = 0
+			line_to_write = ""
+			for scalar in line_in_array:
+
+				if(index == disease_index):
+					disease_to_write = scalar
+					if(scalar == "NA"):
+						disease_to_write = "Control"
+
+					line_to_write += str(disease_to_write)+","
+				else:
+					line_to_write += str(scalar)+","
+
+				index += 1
+
+			line_to_write = line_to_write[:-1]
+			output_data.write(line_to_write+"\n")
+
+		cmpt +=1
+
+	output_data.close()
+	input_data.close()
+
+
+
 """EXECUTE SPACE"""
+#convert_NA_disease_to_Control("data/flow_data_phase_1.txt")
 reformat_for_discretization()

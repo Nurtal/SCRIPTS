@@ -25,6 +25,7 @@ if(identical(os, "Windows")){
   data_file_name = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\panel_1_filtered.txt", sep="")
   play_data_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\play.txt", sep="")
   flow_data_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\flow_data_phase_1.txt", sep="")
+  flow_data_file2 = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\flow_data_phase_1with_control.csv", sep="")
   tmp_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\discretization_data_to_process.txt", sep="")
   reload_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\discretization_data_processed.txt", sep="")
   save_file = paste("C:\\Users\\", login, "\\Desktop\\Nathan\\SpellCraft\\SCRIPTS\\data\\data_discretized.txt", sep="")
@@ -43,7 +44,11 @@ if(identical(os, "Windows")){
 ## FOW CYTOMETRY DATA DISCRETIZATION ##
 
 ## Load data
-data <- read.csv(flow_data_file, header = T, sep=",")
+data <- read.csv(flow_data_file2, header = T, sep=",")
+
+# replace NA in disease by Control
+data[c("X.Clinical.Diagnosis.DISEASE")][is.na(data[c("X.Clinical.Diagnosis.DISEASE")])] <- 0
+
 
 ## Use only patient without NA ( drop control in the process ...)
 data = data[complete.cases(data),]

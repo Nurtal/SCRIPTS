@@ -64,7 +64,7 @@ flow_data_panel_6 <- flow_data_panel_6[complete.cases(flow_data_panel_6),]
 
 
 # Panel to Process:
-panel_to_process <- flow_data_panel_6
+panel_to_process <- flow_data_panel_1
 
 # Run Boruta
 boruta.train <- Boruta(X.Clinical.Diagnosis.DISEASE~.-X.Clinical.Sampling.OMICID, data = panel_to_process, doTrace = 2)
