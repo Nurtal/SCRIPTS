@@ -163,7 +163,6 @@ def run_feature_selection(data_file_name):
 
 
 
-
 def run_rule_generation(data_file_name):
 	"""
 	-> The final step, rule generation
@@ -190,6 +189,6 @@ def run_rule_generation(data_file_name):
 test_file = "data/data_discretized.txt"
 truc = detect_file_format(test_file)
 
-#run_discretization("data/flow_data_phase_1.txt")
-#run_feature_selection("data/rg_data_discretized.txt")
-#run_rule_generation("data/rg_data_filtered.txt")
+run_discretization("data/flow_data_phase_1.txt")
+run_feature_selection("data/rg_data_discretized.txt")
+run_rule_generation("data/rg_data_filtered.txt")
