@@ -1,5 +1,5 @@
 library(arules)
-library(arulesViz)
+#library(arulesViz)
 
 
 # where am i 
@@ -41,7 +41,6 @@ write.table(rules_df, save_rules_file, sep=";")
 ## for better comparison we sort the rules by confidence and add Bayado's improvement
 rules <- sort(rules, by = "confidence")
 quality(rules)$improvement <- interestMeasure(rules, measure = "improvement")
-is.redundant(rules)
 
 # remove redundant rules
 rules_filtered <- rules[!is.redundant(rules)]
