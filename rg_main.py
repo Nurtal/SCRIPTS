@@ -91,6 +91,74 @@ def detect_file_format(data_file_name):
 
 
 
+def reformat_luminex_raw_data():
+	"""
+	-> use data from Phase 1 to generate
+	a clean csv file with only Luminex data, OMICID and
+	DISEASE for each patient.
+	-> input file is data/clinical_i2b2trans_1.txt
+	-> output file is data/Luminex_phase_I_raw_data.csv
+	"""
+
+	omicid_index = -1
+	disease_index = -1
+	luminex_index = []
+
+	## Get the index of variable to keep
+	input_data_file = open("data/clinical_i2b2trans_1.txt", "r")
+	cmpt = 0
+	for line in input_data_file:
+		line = line.split("\n")
+		line = line[0]
+		line_in_array = line.split("\t")
+		if(cmpt == 0):			
+			index = 0
+			for variable in line_in_array:
+				variable_in_array = variable.split("\\")
+				if("Luminex" in variable_in_array):
+					luminex_index.append(index)
+				elif("OMICID" in variable_in_array):
+					omicid_index = index
+				elif("DISEASE" in variable_in_array):
+					disease_index = index
+				index += 1
+		cmpt += 1
+	input_data_file.close()
+
+
+	## Generate a new file with only
+	## the variables we want.
+	input_data_file = open("data/clinical_i2b2trans_1.txt", "r")
+	output_data_file = open("data/Luminex_phase_I_raw_data.csv", "w")
+	cmpt = 0
+	for line in input_data_file:
+		line = line.split("\n")
+		line = line[0]
+		line_in_array = line.split("\t")
+
+		line_to_write = ""
+		index = 0
+		for element in line_in_array:
+			element_formated = element.replace("\t", "")
+			element_formated = element_formated.replace(" ", "")
+			if(index in luminex_index):
+				line_to_write += str(element_formated) +","
+			elif(index == omicid_index):
+				line_to_write += str(element_formated) +","
+			elif(index == disease_index):
+				line_to_write += str(element_formated) +","			
+			index +=1
+
+		line_to_write = line_to_write[:-1]
+		output_data_file.write(line_to_write+"\n")
+	output_data_file.close()
+	input_data_file.close()
+
+	## log message
+	print "[+] Luminex data extracted"
+
+
+
 def run_discretization(data_file_name):
 	"""
 	Run discretization using 2 R scripts
@@ -140,6 +208,7 @@ def run_discretization(data_file_name):
 	subprocess.call ("C:\\Program Files\\R\\R-3.3.3\\bin\\Rscript.exe --vanilla rg_discretization_part2.R", shell=False)
 
 
+
 	print "[*] Discretization complete"
 
 
@@ -186,9 +255,18 @@ def run_rule_generation(data_file_name):
 
 
 ### TEST SPACE ###
-test_file = "data/data_discretized.txt"
-truc = detect_file_format(test_file)
+#test_file = "data/data_discretized.txt"
+#truc = detect_file_format(test_file)
 
-run_discretization("data/flow_data_phase_1.txt")
+## Cyto stuff
+#run_discretization("data/flow_data_phase_1.txt")
+#run_feature_selection("data/rg_data_discretized.txt")
+#run_rule_generation("data/rg_data_filtered.txt")
+
+## Testing Luminex
+## [PROBLEM] => Generate Flow cytometry Rules ...
+## => Probably a NA Problem
+reformat_luminex_raw_data()
+run_discretization("data/Luminex_phase_I_raw_data.csv")
 run_feature_selection("data/rg_data_discretized.txt")
 run_rule_generation("data/rg_data_filtered.txt")
