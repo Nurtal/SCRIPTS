@@ -91,6 +91,88 @@ def detect_file_format(data_file_name):
 
 
 
+
+def check_NA_proportion_in_file(data_file_name):
+	"""
+	[IN PROGRESS]
+	"""
+
+	position_to_variable = {}
+	variable_to_NA_count = {}
+
+	## Count NA values for each variable
+	## in data file.
+	cmpt = 0
+	input_data = open(data_file_name, "r")
+	for line in input_data:
+		line = line.split("\n")
+		line = line[0]
+		line_in_array = line.split(",")
+		
+		if(cmpt == 0):
+			index = 0
+			for variable in line_in_array:
+				position_to_variable[index] = variable
+				variable_to_NA_count[variable] = 0
+				index +=1
+		else:
+			index = 0
+			for scalar in line_in_array:
+				if(scalar == "NA"):
+					variable_to_NA_count[position_to_variable[index]] += 1
+				index+=1
+
+		cmpt += 1
+	input_data.close()
+
+	## Compute the %
+	for key in variable_to_NA_count.keys():
+		variable_to_NA_count[key] = float((float(variable_to_NA_count[key]) / float(cmpt)) * 100)
+
+	## return dict
+	return variable_to_NA_count
+
+
+def filter_NA_values(data_file_name):
+	"""
+	[IN PROGRESS]
+	"""
+
+	## Structure initialization
+	score_list = []
+	variable_saved = []
+
+	## Get information on NA proportion in data file
+	variable_to_NA_proportion = check_NA_proportion_in_file(data_file_name)
+
+	## find minimum score of NA among variables
+	## Exluding OMICID and DISEASE (every patient should have one)
+	for key in variable_to_NA_proportion.keys():
+		if(key != "\\Clinical\\Sampling\\OMICID" and key != "\\Clinical\\Diagnosis\\DISEASE"):
+			score_list.append(variable_to_NA_proportion[key])
+	minimum_score = min(score_list)
+
+	## Use minimum score as a treshold for
+	## selecting variables
+	for key in variable_to_NA_proportion.keys():
+		if(float(variable_to_NA_proportion[key]) > float(minimum_score)):
+			variable_saved.append(key)
+
+	## Log message
+	print "[+] Selecting "+str(len(variable_saved))+" variables among "+str(len(variable_to_NA_proportion.keys())) +" ["+str((float(len(variable_to_NA_proportion.keys()))-float(len(variable_saved))) / float(len(variable_to_NA_proportion.keys()))*100)+"%]"
+
+	## Create a new filtered data file
+	
+
+
+
+
+
+
+
+
+
+
 def reformat_luminex_raw_data():
 	"""
 	-> use data from Phase 1 to generate
@@ -98,8 +180,11 @@ def reformat_luminex_raw_data():
 	DISEASE for each patient.
 	-> input file is data/clinical_i2b2trans_1.txt
 	-> output file is data/Luminex_phase_I_raw_data.csv
+	-> Convert NA values for DISEASE into Control IF patient
+	   is marked as Control in diagnosis\\ARM variable.
 	"""
 
+	case_index = -1
 	omicid_index = -1
 	disease_index = -1
 	luminex_index = []
@@ -121,6 +206,8 @@ def reformat_luminex_raw_data():
 					omicid_index = index
 				elif("DISEASE" in variable_in_array):
 					disease_index = index
+				elif("ARM" in variable_in_array):
+					case_index = index
 				index += 1
 		cmpt += 1
 	input_data_file.close()
@@ -146,6 +233,12 @@ def reformat_luminex_raw_data():
 			elif(index == omicid_index):
 				line_to_write += str(element_formated) +","
 			elif(index == disease_index):
+				if(element_formated == "NA"):
+					case_status = line_in_array[case_index]
+					case_status = case_status.replace("\t", "")
+					case_status = case_status.replace(" ", "")
+					if(case_status == "Control"):
+						element_formated = "Control"
 				line_to_write += str(element_formated) +","			
 			index +=1
 
@@ -257,6 +350,9 @@ def run_rule_generation(data_file_name):
 ### TEST SPACE ###
 #test_file = "data/data_discretized.txt"
 #truc = detect_file_format(test_file)
+#reformat_luminex_raw_data()
+#check_NA_proportion_in_file("data/Luminex_phase_I_raw_data.csv")
+filter_NA_values("data/Luminex_phase_I_raw_data.csv")
 
 ## Cyto stuff
 #run_discretization("data/flow_data_phase_1.txt")
@@ -266,7 +362,7 @@ def run_rule_generation(data_file_name):
 ## Testing Luminex
 ## [PROBLEM] => Generate Flow cytometry Rules ...
 ## => Probably a NA Problem
-reformat_luminex_raw_data()
-run_discretization("data/Luminex_phase_I_raw_data.csv")
-run_feature_selection("data/rg_data_discretized.txt")
-run_rule_generation("data/rg_data_filtered.txt")
+#reformat_luminex_raw_data()
+#run_discretization("data/Luminex_phase_I_raw_data.csv")
+#run_feature_selection("data/rg_data_discretized.txt")
+#run_rule_generation("data/rg_data_filtered.txt")
