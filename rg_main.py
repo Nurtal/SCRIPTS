@@ -12,6 +12,7 @@ report
 
 import shutil
 import subprocess
+import sys
 
 
 def detect_file_format(data_file_name):
@@ -207,14 +208,6 @@ def filter_NA_values(data_file_name):
 
 
 
-
-
-
-
-
-
-
-
 def reformat_luminex_raw_data():
 	"""
 	-> use data from Phase 1 to generate
@@ -341,9 +334,6 @@ def run_discretization(data_file_name):
 	## Run the second script (perform discretization)
 	print "[+] Running R script part 2"
 	subprocess.call ("C:\\Program Files\\R\\R-3.3.3\\bin\\Rscript.exe --vanilla rg_discretization_part2.R", shell=False)
-
-
-
 	print "[*] Discretization complete"
 
 
@@ -387,25 +377,21 @@ def run_rule_generation(data_file_name):
 
 
 
+### MAIN ###
+target = sys.argv[1]
+if(target == "flow"):
+	## Generation Rules from flow cytometry
+	run_discretization("data/flow_data_phase_1.txt")
+	run_feature_selection("data/rg_data_discretized.txt")
+	run_rule_generation("data/rg_data_filtered.txt")
+elif(target == "luminex"):
+	## Generation Rules from Luminex Data
+	reformat_luminex_raw_data()
+	filter_NA_values("data/Luminex_phase_I_raw_data.csv")
+	run_discretization("data/Luminex_phase_I_raw_data_filtered.csv")
+	run_feature_selection("data/rg_data_discretized.txt")
+	run_rule_generation("data/rg_data_filtered.txt")
+else:
+	print "[!] argument "+str(target)+" is invalid"
 
-
-### TEST SPACE ###
-#test_file = "data/data_discretized.txt"
-#truc = detect_file_format(test_file)
-#reformat_luminex_raw_data()
-#check_NA_proportion_in_file("data/Luminex_phase_I_raw_data.csv")
-#filter_NA_values("data/Luminex_phase_I_raw_data.csv")
-
-## Cyto stuff
-#run_discretization("data/flow_data_phase_1.txt")
-#run_feature_selection("data/rg_data_discretized.txt")
-#run_rule_generation("data/rg_data_filtered.txt")
-
-## Testing Luminex
-## [PROBLEM] => Generate Flow cytometry Rules ...
-## => Probably a NA Problem
-reformat_luminex_raw_data()
-filter_NA_values("data/Luminex_phase_I_raw_data.csv")
-run_discretization("data/Luminex_phase_I_raw_data_filtered.csv")
-run_feature_selection("data/rg_data_discretized.txt")
-run_rule_generation("data/rg_data_filtered.txt")
+print "[*] Program terminated"
