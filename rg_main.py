@@ -94,7 +94,10 @@ def detect_file_format(data_file_name):
 
 def check_NA_proportion_in_file(data_file_name):
 	"""
-	[IN PROGRESS]
+	-> data_file_name is a csv file, generate via the 
+	   reformat_luminex_raw_data() function
+	-> Evaluate the proportion of NA values in each variable
+	-> return a dictionnary
 	"""
 
 	position_to_variable = {}
@@ -135,7 +138,13 @@ def check_NA_proportion_in_file(data_file_name):
 
 def filter_NA_values(data_file_name):
 	"""
-	[IN PROGRESS]
+	-> Evaluate the proportion of NA values in each variable
+	   (use the check_NA_proportion_in_file() function).
+	-> Find the minimum proportion of NA (minimum_score, i.e almost
+		patient have non NA values for this feature, except a few ones
+		wich have a lot of NA)
+	-> Rewrite a file (data/Luminex_phase_I_raw_data_filtered.csv) with only
+	   the selected variables
 	"""
 
 	## Structure initialization
@@ -162,28 +171,39 @@ def filter_NA_values(data_file_name):
 	print "[+] Selecting "+str(len(variable_saved))+" variables among "+str(len(variable_to_NA_proportion.keys())) +" ["+str((float(len(variable_to_NA_proportion.keys()))-float(len(variable_saved))) / float(len(variable_to_NA_proportion.keys()))*100)+"%]"
 
 	## Create a new filtered data file
-	
-
-
+	index_to_keep = []
 	cmpt = 0
 	input_data_file = open(data_file_name, "r")
+	output_data_file = open("data/Luminex_phase_I_raw_data_filtered.csv", "w")
 	for line in input_data_file:
 		line = line.split("\n")
 		line = line[0]
 		line_in_array = line.split(",")
-
 		if(cmpt == 0):
+			header_in_line = ""
 			index = 0
 			for variable in line_in_array:
-				variable_in_array = variable.split("\\")
-
-				### TO PATCH				
-
+				score = float(variable_to_NA_proportion[variable])
+				if(score <= minimum_score):
+					header_in_line += str(variable) +","
+					index_to_keep.append(index)
 				index +=1
+			header_in_line = header_in_line[:-1]
+			output_data_file.write(header_in_line+"\n")
+		else:
+			line_to_write = ""
+			index = 0
+			for scalar in line_in_array:
+				if(index in index_to_keep):
+					line_to_write += str(scalar) + ","
+				index += 1
 
-
+			line_to_write = line_to_write[:-1]
+			output_data_file.write(line_to_write+"\n") 
 		cmpt += 1
+	output_data_file.close()
 	input_data_file.close()
+
 
 
 
@@ -374,7 +394,7 @@ def run_rule_generation(data_file_name):
 #truc = detect_file_format(test_file)
 #reformat_luminex_raw_data()
 #check_NA_proportion_in_file("data/Luminex_phase_I_raw_data.csv")
-filter_NA_values("data/Luminex_phase_I_raw_data.csv")
+#filter_NA_values("data/Luminex_phase_I_raw_data.csv")
 
 ## Cyto stuff
 #run_discretization("data/flow_data_phase_1.txt")
@@ -384,7 +404,8 @@ filter_NA_values("data/Luminex_phase_I_raw_data.csv")
 ## Testing Luminex
 ## [PROBLEM] => Generate Flow cytometry Rules ...
 ## => Probably a NA Problem
-#reformat_luminex_raw_data()
-#run_discretization("data/Luminex_phase_I_raw_data.csv")
-#run_feature_selection("data/rg_data_discretized.txt")
-#run_rule_generation("data/rg_data_filtered.txt")
+reformat_luminex_raw_data()
+filter_NA_values("data/Luminex_phase_I_raw_data.csv")
+run_discretization("data/Luminex_phase_I_raw_data_filtered.csv")
+run_feature_selection("data/rg_data_discretized.txt")
+run_rule_generation("data/rg_data_filtered.txt")
