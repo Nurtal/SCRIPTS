@@ -165,6 +165,28 @@ def filter_NA_values(data_file_name):
 	
 
 
+	cmpt = 0
+	input_data_file = open(data_file_name, "r")
+	for line in input_data_file:
+		line = line.split("\n")
+		line = line[0]
+		line_in_array = line.split(",")
+
+		if(cmpt == 0):
+			index = 0
+			for variable in line_in_array:
+				variable_in_array = variable.split("\\")
+
+				### TO PATCH				
+
+				index +=1
+
+
+		cmpt += 1
+	input_data_file.close()
+
+
+
 
 
 
