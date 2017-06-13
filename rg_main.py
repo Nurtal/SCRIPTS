@@ -92,6 +92,85 @@ def detect_file_format(data_file_name):
 
 
 
+def reformat_HLA_raw_data():
+	"""
+	-> use data from Phase 1 to generate
+	a clean csv file with only HLA data, OMICID and
+	DISEASE for each patient.
+	-> input file is data/clinical_i2b2trans_1.txt
+	-> output file is data/HLA_phase_I_raw_data.csv
+	-> Convert NA values for DISEASE into Control IF patient
+	   is marked as Control in diagnosis\\ARM variable.
+	"""
+
+	case_index = -1
+	omicid_index = -1
+	disease_index = -1
+	hla_index = []
+
+	## Get the index of variable to keep
+	input_data_file = open("data/clinical_i2b2trans_1.txt", "r")
+	cmpt = 0
+	for line in input_data_file:
+		line = line.split("\n")
+		line = line[0]
+		line_in_array = line.split("\t")
+
+		if(cmpt == 0):			
+			index = 0
+			for variable in line_in_array:
+				variable_in_array = variable.split("\\")
+				if("HLA" in variable_in_array):
+					hla_index.append(index)
+				elif("OMICID" in variable_in_array):
+					omicid_index = index
+				elif("DISEASE" in variable_in_array):
+					disease_index = index
+				elif("ARM" in variable_in_array):
+					case_index = index
+				index += 1
+		cmpt += 1
+	input_data_file.close()
+
+
+	## Generate a new file with only
+	## the variables we want.
+	input_data_file = open("data/clinical_i2b2trans_1.txt", "r")
+	output_data_file = open("data/HLA_phase_I_raw_data.csv", "w")
+	cmpt = 0
+	for line in input_data_file:
+		line = line.split("\n")
+		line = line[0]
+		line_in_array = line.split("\t")
+
+		line_to_write = ""
+		index = 0
+		for element in line_in_array:
+			element_formated = element.replace("\t", "")
+			element_formated = element_formated.replace(" ", "")
+			if(index in hla_index):
+				line_to_write += str(element_formated) +","
+			elif(index == omicid_index):
+				line_to_write += str(element_formated) +","
+			elif(index == disease_index):
+				if(element_formated == "NA"):
+					case_status = line_in_array[case_index]
+					case_status = case_status.replace("\t", "")
+					case_status = case_status.replace(" ", "")
+					if(case_status == "Control"):
+						element_formated = "Control"
+				line_to_write += str(element_formated) +","			
+			index +=1
+
+		line_to_write = line_to_write[:-1]
+		output_data_file.write(line_to_write+"\n")
+	output_data_file.close()
+	input_data_file.close()
+
+	## log message
+	print "[+] HLA data extracted"
+
+
 
 def check_NA_proportion_in_file(data_file_name):
 	"""
@@ -391,6 +470,15 @@ elif(target == "luminex"):
 	run_discretization("data/Luminex_phase_I_raw_data_filtered.csv")
 	run_feature_selection("data/rg_data_discretized.txt")
 	run_rule_generation("data/rg_data_filtered.txt")
+elif(target == "HLA"):
+	## Generation Rules from HLA Data
+	reformat_HLA_raw_data()
+	run_discretization("data/HLA_phase_I_raw_data.csv")
+	run_feature_selection("data/rg_data_discretized.txt")
+	run_rule_generation("data/rg_data_filtered.txt")
+elif(target == "test"):
+	### TEST SPACE ###
+	print "[+] Running test"
 else:
 	print "[!] argument "+str(target)+" is invalid"
 
