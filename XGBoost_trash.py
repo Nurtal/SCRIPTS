@@ -30,7 +30,7 @@ for line in input_data:
 				line_to_write += str(scalar)+","
 
 			line_to_write = line_to_write[:-1]
-			output_data.write(line_to_write+"\n")
+			output_data.write(line_to_write)
 
 	cmpt += 1
 
